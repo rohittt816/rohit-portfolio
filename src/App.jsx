@@ -85,7 +85,7 @@ const CERTIFICATES = [
     issuer: 'Tata (via Forage)',
     date: 'April 2026',
     skills: ['IAM', 'Security analysis', 'Solution design'],
-    link: 'https://drive.google.com/file/d/1p2uPlM13TZcsaC_YiTkyH9ZK3FKHX4e7/view',
+    link: 'https://drive.google.com/file/d/1p2uPlM13TZcsaC_YiTkyH9ZK3FKHX4e7/view?usp=sharing',
     image: '/certificates/forage.png',
   },
   {
@@ -93,7 +93,7 @@ const CERTIFICATES = [
     issuer: 'AWS Academy',
     date: 'October 2025',
     skills: ['Cloud computing', 'AWS services', 'Cloud security'],
-    link: 'https://drive.google.com/file/d/1rzU8nk81Ho_1RmUPxzau4qu4gNtUG4e8/view',
+    link: 'https://drive.google.com/file/d/1rzU8nk81Ho_1RmUPxzau4qu4gNtUG4e8/view?usp=sharing',
     image: '/certificates/AWS.png',
   },
   {
@@ -101,7 +101,7 @@ const CERTIFICATES = [
     issuer: 'Google Cloud',
     date: 'April 2026',
     skills: ['Prompt engineering', 'Vertex AI', 'Generative AI'],
-    link: 'https://drive.google.com/file/d/1jJdeQzA0wzQ8Z85fQGVqRT--1dtvdHLY/view',
+    link: 'https://drive.google.com/file/d/1jJdeQzA0wzQ8Z85fQGVqRT--1dtvdHLY/view?usp=sharing',
     image: '/certificates/googlecloud.png',
   },
 ];
@@ -112,7 +112,7 @@ const INTERNSHIP = {
   duration: '27 Mar 2024 – 9 May 2024',
   description:
     'Two-month internship with practical exposure to data science concepts, building analytical and problem-solving skills and applying data-driven techniques to real-world problems.',
-  link: 'https://drive.google.com/file/d/1jAladwuk-lEhsYjHC22s0Haygt5Gki2j/view',
+  link: 'https://drive.google.com/file/d/1jAladwuk-lEhsYjHC22s0Haygt5Gki2j/view?usp=sharing',
   image: '/internships/Internzvally-logo.png',
 }
 /* ---------- Shared bits ---------- */
