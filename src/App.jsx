@@ -1,517 +1,574 @@
+import { useEffect, useState } from 'react'
+import { Mail } from 'lucide-react';
 
-import { useState } from 'react'
+import {
+  FaWhatsapp,
+  FaGithub,
+  FaLinkedin,
+  FaJava,
+  FaGitAlt,
+  FaHtml5,
+  FaCss3Alt,
+  FaJs,
+  FaAndroid,
+} from 'react-icons/fa';
 
-function App() {
+import {
+  SiSpringboot,
+  SiReact,
+  SiMysql,
+  SiTailwindcss,
+  SiPostman,
+} from 'react-icons/si';
+
+/* ---------- Editable data ---------- */
+const PROFILE = {
+  name: 'Rohit Jangid',
+  email: 'rohitjangidrj396@gmail.com',
+  github: 'https://github.com/rohittt816',
+  linkedin: 'https://www.linkedin.com/',
+  resume: '/resume.pdf',
+  photo: '/profile.jpg',
+}
+
+const NAV = ['Home', 'About', 'Skills', 'Projects', 'Certificates', 'Internship', 'Contact']
+
+const ROLES = ['Java Full Stack Developer', 'Spring Boot + React', 'Android with Java']
+
+const SKILLS = [
+  { title: 'Languages', icon: '{ }', items: ['Java', 'JavaScript', 'SQL'] },
+  { title: 'Backend', icon: '⚙', items: ['Spring Boot', 'REST APIs', 'Spring Security', 'JPA', 'Hibernate'] },
+  { title: 'Frontend', icon: '◧', items: ['React', 'HTML', 'CSS', 'Tailwind CSS'] },
+  { title: 'Database', icon: '▤', items: ['MySQL'] },
+  { title: 'Tools', icon: '⌘', items: ['Git', 'GitHub', 'Postman', 'Maven', 'Android Studio'] },
+  { title: 'Core concepts', icon: '∑', items: ['OOP', 'DSA', 'DBMS', 'HTTP'] },
+]
+
+const PROJECTS = [
+  {
+    name: 'JMD EV HUB',
+    category: 'Full Stack',
+    description:
+      'An electric scooter showroom application with product listings, accessories, customer accounts, orders, and service management.',
+    features: ['Product and accessory listings', 'Customer accounts and orders', 'Service management'],
+    stack: ['React', 'Spring Boot', 'MySQL'],
+    github: 'https://github.com/rohittt816/jmd-ev-hub',
+    demo: '', // add live URL
+    image: '/projects/JMD_logo.png',
+  },
+  {
+    name: 'Finance Tracker',
+    category: 'Android',
+    description:
+      'A personal finance application designed to track income, expenses, transactions, and financial summaries.',
+    features: ['Income and expense tracking', 'Transaction history', 'Financial summaries'],
+    stack: ['Android Java', 'Spring Boot', 'MySQL'],
+    github: 'https://github.com/rohittt816/FinanceTracker',
+    demo: '',
+    image: '/projects/ft_logo_image.png',
+  },
+  {
+    name: 'Portfolio Website',
+    category: 'Frontend',
+    description: 'This site: a responsive single-page portfolio built with React and Tailwind CSS.',
+    features: ['Responsive layout', 'Section navigation', 'Data-driven content'],
+    stack: ['React', 'Vite', 'Tailwind CSS'],
+    github: '', // add repo URL
+    demo: '', // add Vercel URL
+    image: '/projects/JR_portfolio.png',
+  },
+]
+
+const CERTIFICATES = [
+  {
+    title: 'Cybersecurity Analyst Job Simulation',
+    issuer: 'Tata (via Forage)',
+    date: 'April 2026',
+    skills: ['IAM', 'Security analysis', 'Solution design'],
+    link: 'https://drive.google.com/file/d/1p2uPlM13TZcsaC_YiTkyH9ZK3FKHX4e7/view',
+    image: '/certificates/forage.png',
+  },
+  {
+    title: 'Cloud Foundations',
+    issuer: 'AWS Academy',
+    date: 'October 2025',
+    skills: ['Cloud computing', 'AWS services', 'Cloud security'],
+    link: 'https://drive.google.com/file/d/1rzU8nk81Ho_1RmUPxzau4qu4gNtUG4e8/view',
+    image: '/certificates/AWS.png',
+  },
+  {
+    title: 'Prompt Design in Vertex AI',
+    issuer: 'Google Cloud',
+    date: 'April 2026',
+    skills: ['Prompt engineering', 'Vertex AI', 'Generative AI'],
+    link: 'https://drive.google.com/file/d/1jJdeQzA0wzQ8Z85fQGVqRT--1dtvdHLY/view',
+    image: '/certificates/googlecloud.png',
+  },
+];
+
+const INTERNSHIP = {
+  org: 'Internz Valley',
+  role: 'Data Science Intern',
+  duration: '27 Mar 2024 – 9 May 2024',
+  description:
+    'Two-month internship with practical exposure to data science concepts, building analytical and problem-solving skills and applying data-driven techniques to real-world problems.',
+  link: 'https://drive.google.com/file/d/1jAladwuk-lEhsYjHC22s0Haygt5Gki2j/view',
+  image: '/internships/Internzvally-logo.png',
+}
+/* ---------- Shared bits ---------- */
+const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400'
+const btnPrimary = `rounded-lg bg-emerald-400 px-6 py-3 font-semibold text-black transition hover:bg-emerald-300 ${focus}`
+const btnGhost = `rounded-lg border border-white/15 px-6 py-3 font-semibold text-white transition hover:border-emerald-400 hover:text-emerald-300 ${focus}`
+const card = 'rounded-2xl border border-white/10 bg-white/[0.03] transition hover:border-emerald-400/40'
+
+function Section({ id, title, intro, children }) {
+  return (
+    <section id={id} className="scroll-mt-20 border-t border-white/10 px-6 py-24">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
+        {intro && <p className="mt-4 max-w-2xl leading-7 text-gray-400">{intro}</p>}
+        <div className="mt-12">{children}</div>
+      </div>
+    </section>
+  )
+}
+
+function Badge({ children }) {
+  return (
+    <span className="rounded-md border border-emerald-400/20 bg-emerald-400/5 px-2.5 py-1 text-xs text-emerald-200">
+      {children}
+    </span>
+  )
+}
+
+function ExternalLink({ href, children }) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer"
+      className={`inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 ${focus}`}>
+      {children} <span aria-hidden>↗</span>
+    </a>
+  )
+}
+
+/* ---------- App ---------- */
+export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [active, setActive] = useState('home')
+  const [progress, setProgress] = useState(0)
+  const [showTop, setShowTop] = useState(false)
+  const [roleIndex, setRoleIndex] = useState(0)
+  const [filter, setFilter] = useState('All')
 
-  const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Contact', href: '#contact' },
-  ]
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      setProgress(max > 0 ? (window.scrollY / max) * 100 : 0)
+      setShowTop(window.scrollY > 600)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: '-45% 0px -50% 0px' }
+    )
+    NAV.forEach((n) => {
+      const el = document.getElementById(n.toLowerCase())
+      if (el) observer.observe(el)
+    })
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setInterval(() => setRoleIndex((i) => (i + 1) % ROLES.length), 2800)
+    return () => clearInterval(t)
+  }, [])
+
+  const categories = ['All', ...new Set(PROJECTS.map((p) => p.category))]
+  const visible = PROJECTS.filter((p) => filter === 'All' || p.category === filter)
 
   return (
-    <div className="min-h-screen bg-[#0b0f0e] text-white">
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0b0f0e]/90 backdrop-blur-xl">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
-          <a href="#home" className="text-xl font-bold tracking-tight">
+    <div className="min-h-screen bg-[#0c0f0e] text-white antialiased [scroll-behavior:smooth]">
+      <style>{`
+        html{scroll-behavior:smooth}
+        @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+        .rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+        @keyframes fadeRole{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+        .role{animation:fadeRole .45s ease both}
+        @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rise,.role{animation:none}*{transition:none!important}}
+      `}</style>
+
+      <div className="fixed left-0 top-0 z-[60] h-0.5 bg-emerald-400" style={{ width: `${progress}%` }} aria-hidden />
+
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0c0f0e]/90 backdrop-blur-xl">
+        <nav aria-label="Primary" className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <a href="#home" className={`text-lg font-bold tracking-tight ${focus}`}>
             Rohit<span className="text-emerald-400">.816</span>
           </a>
-
           <button
-            className="rounded-lg border border-white/15 px-3 py-2 text-sm md:hidden"
+            className={`rounded-lg border border-white/15 px-3 py-2 text-sm lg:hidden ${focus}`}
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle navigation menu"
             aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
           >
             {menuOpen ? 'Close' : 'Menu'}
           </button>
-
-          <div className="hidden items-center gap-8 md:flex">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-sm text-gray-300 transition hover:text-emerald-400"
-              >
-                {link.name}
-              </a>
+          <ul className="hidden items-center gap-7 lg:flex">
+            {NAV.map((n) => (
+              <li key={n}>
+                <a href={`#${n.toLowerCase()}`}
+                  aria-current={active === n.toLowerCase() ? 'true' : undefined}
+                  className={`text-sm transition hover:text-emerald-300 ${focus} ${active === n.toLowerCase() ? 'text-emerald-400' : 'text-gray-400'
+                    }`}>
+                  {n}
+                </a>
+              </li>
             ))}
-            <a
-              href="#contact"
-              className="rounded-lg bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-emerald-300"
-            >
-              Let's Talk
-            </a>
-          </div>
+          </ul>
         </nav>
-
         {menuOpen && (
-          <div className="flex flex-col gap-5 border-t border-white/10 px-6 py-5 md:hidden">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="text-gray-300 hover:text-emerald-400"
-              >
-                {link.name}
-              </a>
+          <ul id="mobile-nav" className="flex flex-col gap-4 border-t border-white/10 px-6 py-5 lg:hidden">
+            {NAV.map((n) => (
+              <li key={n}>
+                <a href={`#${n.toLowerCase()}`} onClick={() => setMenuOpen(false)}
+                  className={`${active === n.toLowerCase() ? 'text-emerald-400' : 'text-gray-300'} ${focus}`}>
+                  {n}
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </header>
 
-      {/* Hero */}
-      <main
-        id="home"
-        className="mx-auto grid min-h-[82vh] max-w-7xl items-center gap-14 px-6 py-20 lg:grid-cols-2 lg:px-10"
-      >
-        <section>
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/5 px-4 py-2 text-sm text-emerald-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            Java Full Stack Developer
-          </div>
-
-          <p className="mb-3 text-lg text-gray-400">Hello, I'm</p>
-
-          <h1 className="text-5xl font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-            Rohit
-            <br />
-            <span className="text-emerald-400">Jangid.</span>
-          </h1>
-
-          <h2 className="mt-6 text-xl font-semibold text-gray-200 sm:text-2xl">
-            Java Full Stack Developer
-          </h2>
-
-
-          <p className="mt-5 max-w-xl text-base leading-8 text-gray-400">
-            I build full-stack web applications using Java, Spring Boot,
-            React, REST APIs, and MySQL. I enjoy creating responsive
-            user interfaces, developing secure backend services, and
-            connecting everything into practical software solutions.
-          </p>
-
-
-          <div className="mt-9 flex flex-wrap gap-4">
-            <a
-              href="#projects"
-              className="rounded-lg bg-emerald-400 px-6 py-3 font-semibold text-black transition hover:bg-emerald-300"
-            >
-              Explore My Projects →
-            </a>
-
-            <a
-              href="#contact"
-              className="rounded-lg border border-white/15 px-6 py-3 font-semibold text-white transition hover:border-emerald-400 hover:text-emerald-400"
-            >
-              Contact Me
-            </a>
-
-            <a
-              href="/resume.pdf"
-              download="Rohit-Jangid-Resume.pdf"
-              className="inline-flex items-center gap-2 rounded-lg border border-emerald-400/30 px-6 py-3 font-semibold text-emerald-300 transition hover:-translate-y-1 hover:bg-emerald-400/10"
-            >
-              <span>↓</span> Download Resume
-            </a>
-
-          </div>
-
-          <div className="mt-10 flex flex-wrap gap-6 text-sm text-gray-400">
-            <a
-              href="https://github.com/rohittt816"
-              target="_blank"
-              rel="noreferrer"
-              className="transition hover:text-emerald-400"
-            >
-              GitHub ↗
-            </a>
-            <a
-              href="https://www.linkedin.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="transition hover:text-emerald-400"
-            >
-              LinkedIn ↗
-            </a>
-          </div>
-        </section>
-
-
-        {/* Creative Profile Card */}
-        <section className="mx-auto w-full max-w-md">
-          <div className="group relative overflow-hidden rounded-3xl border border-emerald-400/20 bg-gradient-to-br from-emerald-400/10 via-white/[0.04] to-transparent p-6 shadow-2xl shadow-emerald-950/30 sm:p-8">
-            <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-400/10 blur-3xl transition duration-500 group-hover:bg-emerald-400/20" />
-
-            <div className="relative flex flex-col items-center text-center">
-              <div className="relative mb-6">
-                <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 opacity-70 blur-md transition group-hover:opacity-100" />
-                <img
-                  src="/profile.jpg"
-                  alt="Rohit Jangid"
-                  className="relative h-48 w-48 rounded-full border-4 border-[#0b0f0e] object-cover object-center"
-                />
-                <span className="absolute bottom-3 right-2 h-5 w-5 rounded-full border-4 border-[#0b0f0e] bg-emerald-400" />
-              </div>
-
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-400">
-                Hello, world!
-              </p>
-
-              <h2 className="mt-3 text-2xl font-bold">
-                Rohit Jangid
-              </h2>
-
-              <p className="mt-2 text-gray-400">
-                Java Full Stack Developer
-              </p>
-
-              <div className="mt-6 flex flex-wrap justify-center gap-2">
-                {["Java", "Spring Boot", "React", "MySQL"].map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-full border border-white/10 bg-black/20 px-3 py-2 text-xs text-gray-300 transition hover:border-emerald-400/40 hover:text-emerald-300"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
+      <main>
+        {/* Hero */}
+        <section id="home" className="mx-auto grid min-h-[88vh] max-w-6xl items-center gap-14 px-6 py-20 lg:grid-cols-[1.25fr_1fr]">
+          <div>
+            <p className="rise text-lg text-gray-400">Hi, I’m {PROFILE.name}.</p>
+            <h1 className="rise mt-4 text-4xl font-semibold leading-[1.08] tracking-tight [animation-delay:.1s] sm:text-6xl">
+              Building scalable applications.
+              <br />
+              <span className="text-gray-400">Solving real problems.</span>
+            </h1>
+            <p className="rise mt-6 h-8 text-xl text-emerald-300 [animation-delay:.2s]" aria-live="polite">
+              <span key={roleIndex} className="role inline-block">{ROLES[roleIndex]}</span>
+            </p>
+            <p className="rise mt-4 max-w-xl leading-8 text-gray-400 [animation-delay:.3s]">
+              I build full-stack applications with Java, Spring Boot, React, REST APIs, and MySQL, and
+              Android apps in Java, with responsive interfaces and secure backend services.
+            </p>
+            <div className="rise mt-9 flex flex-wrap gap-4 [animation-delay:.4s]">
+              <a href="#projects" className={btnPrimary}>Explore My Projects</a>
+              <a href={PROFILE.resume} download="Rohit-Jangid-Resume.pdf" className={btnGhost}>Download Resume</a>
+            </div>
+            <div className="rise mt-8 flex gap-6 [animation-delay:.5s]">
+              <a
+                href={PROFILE.github}
+                target="_blank"
+                rel="noreferrer"
+                className="text-white transition-colors hover:text-orange-400"
+              >
+                GitHub ↗
+              </a>
 
               <a
-                href="#projects"
-                className="mt-7 inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 font-semibold text-black transition hover:-translate-y-1 hover:bg-emerald-300"
+                href={PROFILE.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="text-white transition-colors hover:text-sky-400"
               >
-                Explore my work <span>↘</span>
+                LinkedIn ↗
               </a>
+            </div>
+          </div>
+
+          <div className="rise mx-auto w-full max-w-sm [animation-delay:.3s]">
+            <div className="relative">
+              <div className="absolute -inset-3 rounded-[2rem] bg-emerald-400/15 blur-2xl" aria-hidden />
+              <img src={PROFILE.photo} alt={`Portrait of ${PROFILE.name}`} width="384" height="460"
+                className="relative aspect-[5/6] w-full rounded-[2rem] border border-white/10 object-cover object-center" />
             </div>
           </div>
         </section>
 
-      </main>
-
-      {/* About Section */}
-      <section id="about" className="border-t border-white/10 px-6 py-24">
-        <div className="mx-auto max-w-5xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-emerald-400">
-            Get to know me
-          </p>
-
-          <h2 className="text-3xl font-bold sm:text-4xl">
-            About Me
-          </h2>
-
-          <p className="mt-6 max-w-3xl text-base leading-8 text-gray-400">
-            I'm a Computer Science Engineering student passionate about
-            Java full-stack development. I enjoy building practical
-            applications, designing responsive user interfaces, and
-            developing backend APIs using Spring Boot and MySQL.
-            My goal is to become a skilled software engineer by
-            continuously learning and building real-world projects.
-          </p>
-
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {[
-              ['Education', 'B.Tech CSE'],
-              ['Backend', 'Java & Spring Boot'],
-              ['Frontend', 'React & Tailwind CSS'],
-            ].map(([title, value]) => (
-              <div
-                key={title}
-                className="rounded-xl border border-white/10 bg-white/[0.03] p-5"
-              >
-                <p className="text-sm text-gray-500">{title}</p>
-                <p className="mt-2 font-semibold text-white">{value}</p>
-              </div>
-            ))}
+        {/* About */}
+        <Section id="about" title="About">
+          <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+            <div className="space-y-5 leading-8 text-gray-400">
+              <p>
+                I’m a Computer Science Engineering student (B.Tech, Parul University, 2023–2027)
+                focused on Java full-stack development. I like building practical applications:
+                responsive interfaces on the front, Spring Boot and MySQL APIs behind them.
+              </p>
+              <p>
+                I learn by shipping real projects, and I’m looking for software development
+                opportunities and internships where I can keep doing that.
+              </p>
+            </div>
+            <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              {[
+                ['Backend', 'Java, Spring Boot, MySQL'],
+                ['Frontend', 'React, Tailwind CSS'],
+                ['Mobile', 'Android with Java'],
+                ['Projects', 'JMD EV HUB, Finance Tracker'],
+              ].map(([k, v]) => (
+                <div key={k} className={`${card} p-5`}>
+                  <dt className="text-sm text-gray-500">{k}</dt>
+                  <dd className="mt-1 font-medium">{v}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-        </div>
-      </section>
+        </Section>
 
-      {/* Skills Section */}
-      <section id="skills" className="border-t border-white/10 px-6 py-24">
-        <div className="mx-auto max-w-5xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-emerald-400">
-            What I work with
-          </p>
+        {/* Skills */}
 
-          <h2 className="text-3xl font-bold sm:text-4xl">
-            Technical Skills
-          </h2>
-
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: 'Programming',
-                skills: ['Java', 'JavaScript', 'SQL'],
-              },
-              {
-                title: 'Frontend',
-                skills: ['HTML', 'CSS', 'React', 'Tailwind CSS'],
-              },
-              {
-                title: 'Backend',
-                skills: ['Spring Boot', 'REST APIs', 'Spring Security'],
-              },
-              {
-                title: 'Database',
-                skills: ['MySQL', 'JPA', 'Hibernate'],
-              },
-              {
-                title: 'Tools',
-                skills: ['Git', 'GitHub', 'Postman', 'Maven'],
-              },
-              {
-                title: 'Core Concepts',
-                skills: ['OOP', 'DSA', 'DBMS', 'HTTP'],
-              },
-            ].map((group) => (
+        <Section id="skills" title="Skills">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {SKILLS.map((g) => (
               <div
-                key={group.title}
-                className="rounded-xl border border-white/10 bg-white/[0.03] p-6"
+                key={g.title}
+                className={`${card} group p-6 transition duration-300 hover:-translate-y-1 hover:border-emerald-400/50 hover:bg-white/[0.05]`}
               >
-                <h3 className="text-lg font-semibold text-white">
-                  {group.title}
-                </h3>
+                <div className="mb-5 flex items-center gap-3">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400/10 font-mono text-sm text-emerald-300">
+                    {g.icon}
+                  </span>
+                  <h3 className="text-lg font-semibold transition group-hover:text-emerald-300">
+                    {g.title}
+                  </h3>
+                </div>
 
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {group.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="rounded-lg border border-emerald-400/15 bg-emerald-400/5 px-3 py-2 text-sm text-gray-300"
-                    >
-                      {skill}
-                    </span>
-                  ))}
+                <div className="flex flex-wrap gap-3">
+                  {g.items.map((s) => {
+                    const logos = {
+                      Java: <FaJava className="text-[#ED8B00]" />,
+                      "Spring Boot": <SiSpringboot className="text-[#6DB33F]" />,
+                      React: <SiReact className="text-[#61DAFB]" />,
+                      MySQL: <SiMysql className="text-[#4479A1]" />,
+                      Android: <FaAndroid className="text-[#3DDC84]" />,
+                      Git: <FaGitAlt className="text-[#F05032]" />,
+                      GitHub: <FaGithub />,
+                      HTML: <FaHtml5 className="text-[#E34F26]" />,
+                      HTML5: <FaHtml5 className="text-[#E34F26]" />,
+                      CSS: <FaCss3Alt className="text-[#1572B6]" />,
+                      CSS3: <FaCss3Alt className="text-[#1572B6]" />,
+                      JavaScript: <FaJs className="text-[#F7DF1E]" />,
+                      Tailwind: <SiTailwindcss className="text-[#06B6D4]" />,
+                      TailwindCSS: <SiTailwindcss className="text-[#06B6D4]" />,
+                      Postman: <SiPostman className="text-[#FF6C37]" />,
+                    };
+                    return (
+                      <div
+                        key={s}
+                        title={s}
+                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 text-sm text-gray-300 transition hover:border-emerald-400/40 hover:bg-emerald-400/5 hover:text-white"
+                      >
+                        <span className="text-xl">
+                          {logos[s] || (
+                            <span className="text-emerald-300">✦</span>
+                          )}
+                        </span>
+                        <span>{s}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </Section>
 
-      {/* Projects Section */}
-      <section id="projects" className="border-t border-white/10 px-6 py-24">
-        <div className="mx-auto max-w-5xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-emerald-400">
-            What I've built
-          </p>
 
-          <h2 className="text-3xl font-bold sm:text-4xl">
-            Featured Projects
-          </h2>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {[
-              {
-                name: 'JMD EV HUB',
-                description:
-                  'An electric scooter showroom application with product listings, accessories, customer accounts, orders, and service management.',
-                stack: 'React · Spring Boot · MySQL',
-                status: 'Built with React & Spring Boot',
-                github: 'https://github.com/rohittt816/jmd-ev-hub',
-              },
-              {
-                name: 'Finance Tracker',
-                status: 'Built with java & Spring Boot',
-                description:
-                  'A personal finance application designed to track income, expenses, transactions, and financial summaries.',
-                stack: 'Android Java · Spring Boot · MySQL',
-                github: 'https://github.com/rohittt816/FinanceTracker',
-              },
-            ].map((project) => (
-              <article
-                key={project.name}
-                className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:-translate-y-1 hover:border-emerald-400/40"
-              >
-                <p className="text-sm font-medium text-emerald-400">
-                  Featured Project
-                </p>
-
-                <h3 className="mt-4 text-2xl font-bold">
-                  {project.name}
-                </h3>
-                <p className="mt-2 text-sm text-emerald-400">
-                  ● {project.status}
-                </p>
-
-                <p className="mt-4 flex-1 leading-7 text-gray-400">
-                  {project.description}
-                </p>
-
-                <p className="mt-6 text-sm text-gray-300">
-                  {project.stack}
-                </p>
-
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-6 inline-flex w-fit items-center gap-2 font-semibold text-emerald-400 hover:text-emerald-300"
-                >
-                  View on GitHub ↗
-                </a>
+        {/* Projects */}
+        <Section id="projects" title="Projects" intro="Applications I’ve built end to end.">
+          <div className="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter projects">
+            {categories.map((c) => (
+              <button key={c} onClick={() => setFilter(c)} aria-pressed={filter === c}
+                className={`rounded-full border px-4 py-1.5 text-sm transition ${focus} ${filter === c ? 'border-emerald-400 bg-emerald-400 text-black' : 'border-white/15 text-gray-300 hover:border-emerald-400/50'
+                  }`}>
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            {visible.map((p) => (
+              <article key={p.name} className={`${card} group flex flex-col overflow-hidden hover:-translate-y-1`}>
+                {p.image ? (
+                  <img src={p.image} alt={`${p.name} screenshot`} loading="lazy" className="aspect-video w-full object-cover" />
+                ) : (
+                  <div className="grid aspect-video place-items-center bg-gradient-to-br from-emerald-400/10 to-transparent text-4xl font-semibold text-emerald-300/60" aria-hidden>
+                    {p.name.split(' ').map((w) => w[0]).join('')}
+                  </div>
+                )}
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="text-2xl font-semibold">{p.name}</h3>
+                  <p className="mt-3 leading-7 text-gray-400">{p.description}</p>
+                  <ul className="mt-4 space-y-1.5 text-sm text-gray-300">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex gap-2"><span className="text-emerald-400" aria-hidden>✓</span>{f}</li>
+                    ))}
+                  </ul>
+                  <div className="mt-5 flex flex-wrap gap-2">{p.stack.map((s) => <Badge key={s}>{s}</Badge>)}</div>
+                  <div className="mt-6 flex flex-1 items-end gap-5">
+                    {p.github && <ExternalLink href={p.github}>GitHub</ExternalLink>}
+                    {p.demo && <ExternalLink href={p.demo}>Live demo</ExternalLink>}
+                  </div>
+                </div>
               </article>
             ))}
           </div>
-        </div>
-      </section>
+        </Section>
 
-      {/* Contact Section */}
-      <section
-        id="contact"
-        className="border-t border-white/10 px-6 py-24"
-      >
-        <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-2">
-          <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-emerald-400">
-              Get in touch
-            </p>
+        {/* Certificates */}
+        <Section id="certificates" title="Certificates" intro="Verified learning that supports my development work.">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-            <h2 className="text-3xl font-bold sm:text-4xl">
-              Let's work together.
-            </h2>
+            {CERTIFICATES.map((c) => (
+              <article
+                key={c.link}
+                className={`${card} flex flex-col p-6 hover:-translate-y-1`}
+              >
+                <div className="mb-5 flex h-30 items-center justify-center rounded-xl bg-white p-1 ">
 
-            <p className="mt-6 leading-8 text-gray-400">
-              I'm interested in software development opportunities,
-              internships, and collaborating on meaningful projects.
-              Feel free to reach out.
-            </p>
+                  {c.image && (
+                    <img
+                      src={c.image}
+                      alt={`${c.issuer} logo`}
+                      className="max-h-full max-w-full object-contain"
+                      loading="lazy"
+                    />
+                  )}
+                </div>
 
-            <div className="mt-8 space-y-4 text-gray-300">
-              <p>
-                <span className="text-gray-500">Email: </span>
-                <a
-                  href="mailto:rohitjangidrj396@gmail.com"
-                  className="hover:text-emerald-400"
-                >
-                  rohitjangidrj396@gmai.com
-                </a>
-              </p>
+                <p className="text-sm text-emerald-400">{c.issuer}</p>
 
-              <p>
-                <span className="text-gray-500">GitHub: </span>
-                <a
-                  href="https://github.com/rohittt816"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-emerald-400"
-                >
-                  github.com/rohittt816 ↗
-                </a>
-              </p>
+                <h3 className="mt-2 text-lg font-semibold">{c.title}</h3>
 
-              <p>
-                <span className="text-gray-500">LinkedIn: </span>
-                <a
-                  href="https://www.linkedin.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-emerald-400"
-                >
-                  Connect with me ↗
-                </a>
-              </p>
+                {c.date && (
+                  <p className="mt-1 text-sm text-gray-500">{c.date}</p>
+                )}
+
+                <div className="mt-4 flex flex-1 flex-wrap content-start gap-2">
+                  {c.skills.map((s) => (
+                    <Badge key={s}>{s}</Badge>
+                  ))}
+                </div>
+
+                <div className="mt-6">
+                  <ExternalLink href={c.link}>View certificate</ExternalLink>
+                </div>
+              </article>
+            ))}
+
+          </div>
+        </Section>
+
+        {/* Internship */}
+
+        <Section id="internship" title="Internship">
+          <article className={`${card} max-w-3xl p-6 sm:p-8`}>
+            <div className="mb-6 flex h-40 w-100 items-center justify-center rounded-xl bg-white p-3">
+              <img
+                src={INTERNSHIP.image}
+                alt={`${INTERNSHIP.org} logo`}
+                className="max-h-full max-w-full object-contain"
+                loading="lazy"
+              />
             </div>
+
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 className="text-2xl font-semibold">{INTERNSHIP.role}</h3>
+              <p className="text-sm text-gray-500">{INTERNSHIP.duration}</p>
+            </div>
+
+            <p className="mt-1 text-lg text-emerald-300">{INTERNSHIP.org}</p>
+
+            <p className="mt-4 leading-7 text-gray-400">
+              {INTERNSHIP.description}
+            </p>
+
+            <div className="mt-6">
+              <ExternalLink href={INTERNSHIP.link}>
+                View internship certificate
+              </ExternalLink>
+            </div>
+          </article>
+        </Section>
+
+
+        {/* Contact */}
+        <Section
+          id="contact"
+          title="Let’s work together"
+          intro="I’m open to software development roles, internships, and collaboration on meaningful projects."
+        >
+          <div className="flex flex-wrap gap-4">
+            <a
+              href={`mailto:${PROFILE.email}`}
+              className={`${btnPrimary} inline-flex items-center gap-3`}
+            >
+              <Mail size={20} />
+              <span>Email me</span>
+            </a>
+
+            <a
+              href="https://wa.me/919680699317"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${btnGhost} inline-flex items-center gap-3`}
+            >
+              <FaWhatsapp size={21} className="text-[#25D366]" />
+              <span>WhatsApp</span>
+            </a>
+
+            <a
+              href={PROFILE.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${btnGhost} inline-flex items-center gap-3`}
+            >
+              <FaGithub size={21} />
+              <span>GitHub</span>
+            </a>
+
+            <a
+              href={PROFILE.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${btnGhost} inline-flex items-center gap-3`}
+            >
+              <FaLinkedin size={21} className="text-[#0A66C2]" />
+              <span>LinkedIn</span>
+            </a>
           </div>
 
-          <form
-            action="mailto:YOUR_EMAIL@example.com"
-            method="post"
-            encType="text/plain"
-            className="space-y-5 rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8"
-          >
-            <div>
-              <label
-                htmlFor="name"
-                className="mb-2 block text-sm text-gray-300"
-              >
-                Your Name
-              </label>
-              <input
-                id="name"
-                name="Name"
-                type="text"
-                placeholder="Enter your name"
-                required
-                className="w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-gray-600 focus:border-emerald-400"
-              />
-            </div>
+          <p className="mt-6 flex items-center gap-2 text-gray-500">
+            <Mail size={18} className="text-emerald-400" />
+            {PROFILE.email}
+          </p>
+        </Section>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-2 block text-sm text-gray-300"
-              >
-                Your Email
-              </label>
-              <input
-                id="email"
-                name="Email"
-                type="email"
-                placeholder="you@example.com"
-                required
-                className="w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-gray-600 focus:border-emerald-400"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="message"
-                className="mb-2 block text-sm text-gray-300"
-              >
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="Message"
-                rows="4"
-                placeholder="Write your message..."
-                required
-                className="w-full resize-y rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-gray-600 focus:border-emerald-400"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-emerald-400 px-6 py-3 font-semibold text-black transition hover:bg-emerald-300"
-            >
-              Send Message →
-            </button>
-
-            <p className="text-xs leading-5 text-gray-500">
-              This basic form opens your default email application.
-              A backend or form service is needed for direct message delivery.
-            </p>
-          </form>
-        </div>
-      </section>
+      </main>
 
       <footer className="border-t border-white/10 px-6 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
-          <a href="#home" className="text-lg font-bold">
-            Rohit<span className="text-emerald-400">.816</span>
-          </a>
-
-          <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} Rohit Jangid. Built with React and Tailwind CSS.
-          </p>
-
-          <a
-            href="#home"
-            className="text-sm text-gray-400 transition hover:text-emerald-400"
-          >
-            Back to top ↑
-          </a>
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-sm text-gray-500 sm:flex-row">
+          <p>© {new Date().getFullYear()} {PROFILE.name}. Built with React and Tailwind CSS.</p>
+          <a href="#home" className={`hover:text-emerald-400 ${focus}`}>Back to top</a>
         </div>
       </footer>
 
+      {showTop && (
+        <a href="#home" aria-label="Back to top"
+          className={`fixed bottom-6 right-6 z-50 grid h-11 w-11 place-items-center rounded-full bg-emerald-400 text-black shadow-lg transition hover:bg-emerald-300 ${focus}`}>
+          ↑
+        </a>
+      )}
     </div>
   )
 }
-
-export default App
