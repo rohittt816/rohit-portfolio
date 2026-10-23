@@ -473,7 +473,7 @@ export default function App() {
 
         <Section id="internship" title="Internship">
           <article className={`${card} max-w-3xl p-6 sm:p-8`}>
-            <div className="mb-6 flex h-40 w-100 items-center justify-center rounded-xl bg-white p-3">
+           <div className="mb-6 flex h-40 w-full max-w-xs items-center justify-center rounded-xl bg-white p-3">
               <img
                 src={INTERNSHIP.image}
                 alt={`${INTERNSHIP.org} logo`}
